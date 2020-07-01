@@ -3,7 +3,6 @@ var parse = require("rehype-parse");
 var rehype2remark = require("rehype-remark");
 var stringify = require("remark-stringify");
 var mdx = require("@mdx-js/mdx");
-var toHtml = require("hast-util-to-html");
 
 const babel = require(`@babel/core`);
 const BabelPluginPluckImports = require(`babel-plugin-pluck-imports`);
@@ -12,16 +11,13 @@ const objRestSpread = require(`@babel/plugin-proposal-object-rest-spread`);
 const htmlAttrToJSXAttr = require(`./babel-plugin-html-attr-to-jsx-attr`);
 const removeExportKeywords = require(`babel-plugin-remove-export-keywords`);
 
-function iframe(h, node) {
-  return h(node, "html", toHtml(node, { space: "html" }));
-}
 
-var processor = unified()
-  .use(parse)
-  .use(rehype2remark, { handlers: { iframe } })
-  .use(stringify);
+module.exports = async (htmlInput, handlers) => {
+  const processor = unified()
+    .use(parse)
+    .use(rehype2remark, { handlers: { ...handlers } })
+    .use(stringify);
 
-module.exports = async (htmlInput) => {
   const markdown = processor.processSync(htmlInput);
   const compiledMarkdown = await mdx(markdown);
 
