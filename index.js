@@ -19,7 +19,14 @@ module.exports = async (htmlInput, handlers) => {
     .use(stringify);
 
   const markdown = processor.processSync(htmlInput);
-  const compiledMarkdown = await mdx(markdown);
+  let compiledMarkdown;
+
+  //if not a valid markdown, we send empty div to convert into markdown
+  try {
+    compiledMarkdown = await mdx(markdown);
+  } catch (error) {
+    compiledMarkdown = await mdx(`<div></div>`);
+  }
 
   const instance = new BabelPluginPluckImports();
   const result = babel.transform(compiledMarkdown, {
