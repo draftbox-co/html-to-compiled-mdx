@@ -18,11 +18,12 @@ module.exports = async (htmlInput, handlers) => {
     .use(rehype2remark, { handlers: { ...handlers } })
     .use(stringify);
 
-  const markdown = processor.processSync(htmlInput);
+  // const markdown = processor.processSync(htmlInput);
   let compiledMarkdown;
 
   //if not a valid markdown, we send empty div to convert into markdown
   try {
+    const markdown = processor.processSync(htmlInput);
     compiledMarkdown = await mdx(markdown);
   } catch (error) {
     compiledMarkdown = await mdx(`<div></div>`);
